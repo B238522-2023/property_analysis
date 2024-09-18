@@ -1,0 +1,144 @@
+---
+title: "enrichment_publish"
+author: "Chloe"
+date: "2024-06-05"
+output:
+  html_document: default
+  pdf_document: default
+  always_allow_html: true
+params:
+  base_path: "C:/Users/Lenovo/Desktop/dissertation/gene_enrichment"
+---
+
+# 1.internal
+```{r}
+data_Internal_all <- read_delim("C:/Users/Lenovo/Desktop/dissertation/gene_enrichment/Internal/DAVID/Internal_all.txt", "\t", escape_double = FALSE, trim_ws = TRUE, col_types = cols()) %>%
+      mutate(Term = sub(".*~", "", Term)) # 修改术语列，删除~及其前面的内容
+
+data_Internal_all <- data_Internal_all %>%
+  mutate(Category = case_when(
+    grepl("GOTERM_BP_DIRECT", Category) ~ "BP",  # 如果Category包含"GOTERM_BP_DIRECT"，则归类为"BP"
+    grepl("GOTERM_CC_DIRECT", Category) ~ "CC",  # 如果Category包含"GOTERM_CC_DIRECT"，则归类为"CC"
+    grepl("GOTERM_MF_DIRECT", Category) ~ "MF",  # 如果Category包含"GOTERM_MF_DIRECT"，则归类为"MF"
+    grepl("REACTOME_PATHWAY", Category) ~ "Pathway",  # 可以为"REACTOME_PATHWAY"添加新类别名"Pathway"
+    grepl("UP_SEQ_FEATURE", Category) ~ "Sequence Feature",
+    TRUE ~ Category  # 保留原始分类，如果没有匹配的情况
+  ))
+
+
+data_Internal_all_top5 <- data_Internal_all %>%
+  group_by(Category) %>%       # 按类别分组
+  arrange((PValue), .by_group = TRUE) %>%  # 每个组内按PValue降序排列
+  slice_head(n = 5) %>%       # 从每组中选择前10个记录
+  ungroup()
+
+p_all_Internal <- ggplot(data_Internal_all_top5, aes(x = `Fold Enrichment`, y = Term, size = Count, color = -log10(PValue))) +
+    geom_point() +  # 绘制点
+    scale_color_gradientn(colors = c("blue", "green", "yellow", "red"),
+                          values = rescale(c(0, 5, 20, 70))) +  # P值颜色渐变
+    facet_grid(Category ~ ., scales = 'free_y', space = 'free_y') +
+    theme_bw() +  # 使用白色背景主题
+    labs(x = "Fold Enrichment",
+         y = "Term",
+         color = "-log10(PValue)",
+         size = "Count") +
+    theme(
+      axis.title.x = element_text(size = 14),
+      axis.title.y = element_text(size = 14),
+      axis.text.x = element_text(size = 14),
+      axis.text.y = element_text(size = 14),
+      strip.text = element_text(size = 14),
+      legend.text = element_text(size = 14)
+    )
+p_all_Internal
+ggsave("enrichment_all_Internal.png", plot = p_all_Internal, width = 9, height = 10, dpi = 1000, units = "in")
+```
+
+# 2.N
+```{r}
+data_N_all <- read_delim("C:/Users/Lenovo/Desktop/dissertation/gene_enrichment/N_terminal/DAVID/N_all.txt", "\t", escape_double = FALSE, trim_ws = TRUE, col_types = cols()) %>%
+      mutate(Term = sub(".*~", "", Term)) # 修改术语列，删除~及其前面的内容
+
+data_N_all <- data_N_all %>%
+  mutate(Category = case_when(
+    grepl("GOTERM_BP_DIRECT", Category) ~ "BP",  # 如果Category包含"GOTERM_BP_DIRECT"，则归类为"BP"
+    grepl("GOTERM_CC_DIRECT", Category) ~ "CC",  # 如果Category包含"GOTERM_CC_DIRECT"，则归类为"CC"
+    grepl("GOTERM_MF_DIRECT", Category) ~ "MF",  # 如果Category包含"GOTERM_MF_DIRECT"，则归类为"MF"
+    grepl("REACTOME_PATHWAY", Category) ~ "Pathway",  # 可以为"REACTOME_PATHWAY"添加新类别名"Pathway"
+    grepl("UP_SEQ_FEATURE", Category) ~ "Sequence Feature",
+    TRUE ~ Category  # 保留原始分类，如果没有匹配的情况
+  ))
+
+
+data_N_all_top5 <- data_N_all %>%
+  group_by(Category) %>%       # 按类别分组
+  arrange((PValue), .by_group = TRUE) %>%  # 每个组内按PValue降序排列
+  slice_head(n = 5) %>%       # 从每组中选择前10个记录
+  ungroup()
+
+p_all_Internal <- ggplot(data_N_all_top5, aes(x = `Fold Enrichment`, y = Term, size = Count, color = -log10(PValue))) +
+    geom_point() +  # 绘制点
+    scale_color_gradientn(colors = c("blue", "green", "yellow", "red"),
+                          values = rescale(c(0, 5, 10, 40))) +  # P值颜色渐变
+    facet_grid(Category ~ ., scales = 'free_y', space = 'free_y') +
+    theme_bw() +  # 使用白色背景主题
+    labs(x = "Fold Enrichment",
+         y = "Term",
+         color = "-log10(PValue)",
+         size = "Count") +
+    theme(
+      axis.title.x = element_text(size = 14),
+      axis.title.y = element_text(size = 14),
+      axis.text.x = element_text(size = 14),
+      axis.text.y = element_text(size = 14),
+      strip.text = element_text(size = 14),
+      legend.text = element_text(size = 14)
+    )
+p_all_Internal
+ggsave("enrichment_all_N.png", plot = p_all_Internal, width = 9, height = 10, dpi = 1000, units = "in")
+
+```
+# 3.N
+```{r}
+data_Internal_all <- read_delim("C:/Users/Lenovo/Desktop/dissertation/gene_enrichment/Internal/DAVID/Internal_all.txt", "\t", escape_double = FALSE, trim_ws = TRUE, col_types = cols()) %>%
+      mutate(Term = sub(".*~", "", Term)) # 修改术语列，删除~及其前面的内容
+
+data_Internal_all <- data_Internal_all %>%
+  mutate(Category = case_when(
+    grepl("GOTERM_BP_DIRECT", Category) ~ "BP",  # 如果Category包含"GOTERM_BP_DIRECT"，则归类为"BP"
+    grepl("GOTERM_CC_DIRECT", Category) ~ "CC",  # 如果Category包含"GOTERM_CC_DIRECT"，则归类为"CC"
+    grepl("GOTERM_MF_DIRECT", Category) ~ "MF",  # 如果Category包含"GOTERM_MF_DIRECT"，则归类为"MF"
+    grepl("REACTOME_PATHWAY", Category) ~ "Pathway",  # 可以为"REACTOME_PATHWAY"添加新类别名"Pathway"
+    grepl("UP_SEQ_FEATURE", Category) ~ "Sequence Feature",
+    TRUE ~ Category  # 保留原始分类，如果没有匹配的情况
+  ))
+
+
+data_Internal_all_top5 <- data_Internal_all %>%
+  group_by(Category) %>%       # 按类别分组
+  arrange((PValue), .by_group = TRUE) %>%  # 每个组内按PValue降序排列
+  slice_head(n = 5) %>%       # 从每组中选择前10个记录
+  ungroup()
+
+p_all_Internal <- ggplot(data_Internal_all_top5, aes(x = `Fold Enrichment`, y = Term, size = Count, color = -log10(PValue))) +
+    geom_point() +  # 绘制点
+    scale_color_gradientn(colors = c("blue", "green", "yellow", "red"),
+                          values = rescale(c(0, 5, 10, 40))) +  # P值颜色渐变
+    facet_grid(Category ~ ., scales = 'free_y', space = 'free_y') +
+    theme_bw() +  # 使用白色背景主题
+    labs(x = "Fold Enrichment",
+         y = "Term",
+         color = "-log10(PValue)",
+         size = "Count") +
+    theme(
+      axis.title.x = element_text(size = 14),
+      axis.title.y = element_text(size = 14),
+      axis.text.x = element_text(size = 14),
+      axis.text.y = element_text(size = 14),
+      strip.text = element_text(size = 14),
+      legend.text = element_text(size = 14)
+    )
+p_all_Internal
+ggsave("enrichment_all_Internal.png", plot = p_all_Internal, width = 9, height = 10, dpi = 1000, units = "in")
+
+```
